@@ -5,7 +5,7 @@
   const status = document.querySelector('#open-status');
 
   const setHeaderState = () => {
-    if (header) header.classList.toggle('scrolled', window.scrollY > 20);
+    if (header) header.classList.toggle('scrolled', window.scrollY > 18);
   };
 
   setHeaderState();
@@ -27,7 +27,7 @@
     });
   }
 
-  const getTorontoParts = () => {
+  const getOntarioTime = () => {
     const formatter = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'America/Toronto',
       weekday: 'short',
@@ -44,17 +44,16 @@
 
   const updateOpenStatus = () => {
     if (!status) return;
-
     try {
-      const parts = getTorontoParts();
+      const parts = getOntarioTime();
       const minutes = Number(parts.hour) * 60 + Number(parts.minute);
-      const isSunday = parts.weekday === 'Sun';
-      const opensAt = isSunday ? 14 * 60 : 11 * 60;
-      const isOpen = minutes >= opensAt && minutes <= 23 * 60 + 59;
+      const sunday = parts.weekday === 'Sun';
+      const opens = sunday ? 14 * 60 : 11 * 60;
+      const open = minutes >= opens && minutes <= 23 * 60 + 59;
 
-      status.textContent = isOpen ? 'Open now · until midnight' : `Closed now · opens ${isSunday ? '2:00 PM' : '11:00 AM'}`;
-      status.classList.toggle('is-open', isOpen);
-      status.classList.toggle('is-closed', !isOpen);
+      status.textContent = open ? 'Open now · until midnight' : `Closed now · opens ${sunday ? '2:00 PM' : '11:00 AM'}`;
+      status.classList.toggle('is-open', open);
+      status.classList.toggle('is-closed', !open);
     } catch {
       status.textContent = 'See today’s hours above';
     }
@@ -71,4 +70,19 @@
       });
     });
   });
+
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -35px' });
+    reveals.forEach((el) => observer.observe(el));
+  } else {
+    reveals.forEach((el) => el.classList.add('is-visible'));
+  }
 })();
