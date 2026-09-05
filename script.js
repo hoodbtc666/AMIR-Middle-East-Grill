@@ -71,6 +71,34 @@
     });
   });
 
+  // Automatically include the newest restaurant photos that were added to this repo.
+  // They stay in the gallery with neutral labels so we do not misidentify a dish.
+  const gallery = document.querySelector('.photo-grid');
+  if (gallery) {
+    const newPhotos = [
+      '796640610_1114469678052660_2976353442159035332_n.webp',
+      '796940836_28395411196754865_6927143069474894834_n.webp',
+      '796968293_1738631804124384_2602888669479728879_n.webp',
+      '798393363_2143559859528134_8106833509244442647_n.webp'
+    ];
+
+    newPhotos.forEach((src, index) => {
+      if (gallery.querySelector(`img[src="${src}"]`)) return;
+
+      const figure = document.createElement('figure');
+      figure.className = index % 3 === 2 ? 'photo photo-wide reveal' : 'photo reveal';
+
+      const image = document.createElement('img');
+      image.src = src;
+      image.alt = 'AMIR Middle East Grill restaurant photo';
+      image.loading = 'lazy';
+      image.decoding = 'async';
+
+      figure.appendChild(image);
+      gallery.appendChild(figure);
+    });
+  }
+
   const reveals = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
